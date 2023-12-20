@@ -144,6 +144,14 @@ namespace DastBytes {
     public void StringTest(){
       var buffer = new Buffer();
 
+      for (var i = 0; i < 256; ++i){
+        Assert.That(Buffer.GetHexByteString((byte)i) == $"{i:X2}");
+      }
+
+      buffer.Write("data", 4);
+      Assert.That(buffer.Length == 4);
+      Assert.That(buffer.Read(4) == "data");
+
       buffer.Write("ア");
       Assert.That(buffer.Read() == "ア");
       buffer.Write("イ");

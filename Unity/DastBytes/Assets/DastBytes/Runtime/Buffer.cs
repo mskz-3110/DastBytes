@@ -6,10 +6,10 @@ namespace DastBytes {
   public class Buffer {
     static private UTF8Encoding UTF8 = new UTF8Encoding(false);
 
-    static private string[] HexByteStrings;
+    static private string[] HexByteStrings = new string[256];
+    static public string GetHexByteString(byte index) => HexByteStrings[index];
 
     static Buffer(){
-      HexByteStrings = new string[256];
       for (int i = 0; i < HexByteStrings.Length; ++i){
         HexByteStrings[i] = $"{i:X2}";
       }
@@ -72,12 +72,16 @@ namespace DastBytes {
       m_WriteIndex += byteCount;
     }
 
-    public void Write(string value){
-      int byteCount = UTF8.GetByteCount(value);
-      Write(byteCount);
+    public void Write(string value, int byteCount){
       CheckWriteBytes(byteCount);
       UTF8.GetBytes(value, 0, value.Length, m_Bytes, m_WriteIndex);
       m_WriteIndex += byteCount;
+    }
+
+    public void Write(string value){
+      int byteCount = UTF8.GetByteCount(value);
+      Write(byteCount);
+      Write(value, byteCount);
     }
 
     public void Write(Buffer value){
@@ -120,11 +124,14 @@ namespace DastBytes {
       return value;
     }
 
-    public string Read(){
-      int byteCount = Read<int>();
+    public string Read(int byteCount){
       int readIndex = m_ReadIndex;
       m_ReadIndex += byteCount;
       return UTF8.GetString(m_Bytes, readIndex, byteCount);
+    }
+
+    public string Read(){
+      return Read(Read<int>());
     }
 
     public Buffer Read(Buffer buffer){
