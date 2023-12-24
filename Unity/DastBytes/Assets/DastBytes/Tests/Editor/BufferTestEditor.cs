@@ -251,6 +251,31 @@ namespace DastBytes {
     }
 
     [Test]
+    public void VariableLengthTest(){
+      var buffer = new Buffer();
+
+      buffer.WriteVariableLength(0x01);
+      Assert.That(buffer.Length == 1);
+      Assert.That(buffer.ToString() == "01");
+      Assert.That(buffer.ReadVariableLength() == 0x01);
+
+      buffer.WriteVariableLength(0x0123);
+      Assert.That(buffer.Length == 2);
+      Assert.That(buffer.ToString() == "4123");
+      Assert.That(buffer.ReadVariableLength() == 0x0123);
+
+      buffer.WriteVariableLength(0x01234567);
+      Assert.That(buffer.Length == 4);
+      Assert.That(buffer.ToString() == "81234567");
+      Assert.That(buffer.ReadVariableLength() == 0x01234567);
+
+      buffer.WriteVariableLength(0x0123456789ABCDEF);
+      Assert.That(buffer.Length == 8);
+      Assert.That(buffer.ToString() == "C123456789ABCDEF");
+      Assert.That(buffer.ReadVariableLength() == 0x0123456789ABCDEF);
+    }
+
+    [Test]
     public void ArrayTest(){
       var buffer = new Buffer();
 
